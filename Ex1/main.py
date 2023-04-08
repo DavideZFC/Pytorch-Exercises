@@ -20,11 +20,11 @@ N_test = 100
 x_test = np.linspace(0, 2 * np.pi, N_test)
 
 # compute prediction on test set
-y_target = np.sin(x_test)
-y_test = net(torch.Tensor(x_test).reshape(-1, 1)).detach().numpy().reshape(N_test)
+y_test = np.sin(x_test)
+y_pred = net(torch.Tensor(x_test).reshape(-1, 1)).detach().numpy().reshape(N_test)
 
 # show the results
-print('MSE: '+str(np.mean((y_test-y_target)**2)))
-plt.plot(x_test, y_test)
-plt.plot(x_test, y_target, 'o')
+print('MSE: '+str(np.mean((y_test-y_pred)**2)))
+plt.plot(x_test, y_pred)
+plt.plot(x_test, y_test, 'o')
 plt.show()
