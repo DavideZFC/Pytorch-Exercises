@@ -3,8 +3,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
-''' Prova: non mi committa più le cose'''
-
 class Net(nn.Module):
     def __init__(self, neurons_per_layer):
         super(Net, self).__init__()
