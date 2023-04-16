@@ -6,9 +6,17 @@ import torch.optim as optim
 class Net(nn.Module):
     def __init__(self, neurons_per_layer):
         super(Net, self).__init__()
+
+        # build list of layers
         self.layers = nn.ModuleList()
+
+        # cycle over the number of neuron per layers adding the respective number of neurons
         for i in range(len(neurons_per_layer)-1):
+
+            # add linear layer of neurons
             self.layers.append(nn.Linear(neurons_per_layer[i], neurons_per_layer[i+1]))
+
+            # if we are not in the first or last layer, add activation function
             if i>0 and i<len(neurons_per_layer)-2:
                 self.layers.append(nn.ReLU())
 

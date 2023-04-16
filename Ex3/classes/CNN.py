@@ -2,14 +2,27 @@ import torch
 import torch.nn as nn
 
 class CNN(nn.Module):
-    def __init__(self):
+    def __init__(self, neurons_per_layer, kernel_sizes):
         super(CNN, self).__init__()
-        
-        # Definiamo i layer convoluzionali
-        self.conv1 = nn.Conv2d(in_channels=3, out_channels=16, kernel_size=3, padding=1)
-        self.conv2 = nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3, padding=1)
-        self.conv3 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, padding=1)
-        
+
+        # build list of layers
+        self.layers = nn.ModuleList()
+
+        # cicle over the number of neuron per layers adding the respective number of neurons
+        for i in range(len(neurons_per_layer)-1):
+            
+            # add linear layer of neurons
+            self.layers.append(nn.Conv2d(in_channels=neurons_per_layer[i], out_channels=neurons_per_layer[i+1], kernel_size=kernel_sizes[i], padding=1))
+
+            # at each step, we apply a maxpooling operator to reduce the image size
+            self.layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
+
+            # if we are not in the first or last layer, add activation function
+            if i>0 and i<len(neurons_per_layer)-2:
+                self.layers.append(nn.ReLU())
+
+        input = torch.rand(1, neurons_per_layer[0], 28, 28)
+                
         # Definiamo i layer lineari
         self.fc1 = nn.Linear(in_features=64*4*4, out_features=512)
         self.fc2 = nn.Linear(in_features=512, out_features=10)
