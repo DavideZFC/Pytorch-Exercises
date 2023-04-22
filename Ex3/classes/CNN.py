@@ -1,50 +1,59 @@
 import torch
 import torch.nn as nn
+import torch.optim as optim
 
-class CNN(nn.Module):
-    def __init__(self, neurons_per_layer, kernel_sizes):
-        super(CNN, self).__init__()
+# Define the CNN architecture
 
-        # build list of layers
-        self.layers = nn.ModuleList()
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+        self.conv1 = nn.Conv2d(1, 32, 3, padding=1)
+        self.conv2 = nn.Conv2d(32, 64, 3, padding=1)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.fc1 = nn.Linear(64 * 7 * 7, 128)
+        self.fc2 = nn.Linear(128, 10)
 
-        # cicle over the number of neuron per layers adding the respective number of neurons
-        for i in range(len(neurons_per_layer)-1):
-            
-            # add linear layer of neurons
-            self.layers.append(nn.Conv2d(in_channels=neurons_per_layer[i], out_channels=neurons_per_layer[i+1], kernel_size=kernel_sizes[i], padding=1))
-
-            # at each step, we apply a maxpooling operator to reduce the image size
-            self.layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
-
-            # if we are not in the first or last layer, add activation function
-            if i>0 and i<len(neurons_per_layer)-2:
-                self.layers.append(nn.ReLU())
-
-        input = torch.rand(1, neurons_per_layer[0], 28, 28)
-                
-        # Definiamo i layer lineari
-        self.fc1 = nn.Linear(in_features=64*4*4, out_features=512)
-        self.fc2 = nn.Linear(in_features=512, out_features=10)
-        
-        # Definiamo il layer di dropout
-        self.dropout = nn.Dropout(p=0.5)
-        
     def forward(self, x):
-        # Applichiamo i layer convoluzionali
-        x = nn.functional.relu(self.conv1(x))
-        x = nn.functional.max_pool2d(x, 2)
-        x = nn.functional.relu(self.conv2(x))
-        x = nn.functional.max_pool2d(x, 2)
-        x = nn.functional.relu(self.conv3(x))
-        x = nn.functional.max_pool2d(x, 2)
-        
-        # Reshape per la linearizzazione
-        x = x.view(-1, 64*4*4)
-        
-        # Applichiamo i layer lineari e il dropout
+        x = self.pool(nn.functional.relu(self.conv1(x)))
+        x = self.pool(nn.functional.relu(self.conv2(x)))
+        x = torch.flatten(x, 1)
         x = nn.functional.relu(self.fc1(x))
-        x = self.dropout(x)
         x = self.fc2(x)
-        
         return x
+    
+class CNN:
+    def __init__(self):
+        self.net = Net()
+        self.criterion = nn.CrossEntropyLoss()
+        self.optimizer = optim.SGD(self.net.parameters(), lr=0.001, momentum=0.9)
+
+    def train(self, dataloader, epochs=10):
+        # Allenamento della CNN
+        for epoch in range(epochs):
+            running_loss = 0.0
+            for i, data in enumerate(dataloader, 0):
+                inputs, labels = data
+                self.optimizer.zero_grad()
+                outputs = self.net(inputs)
+                loss = self.criterion(outputs, labels)
+                loss.backward()
+                self.optimizer.step()
+                running_loss += loss.item()
+                if i % 100 == 99:
+                    print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / 100))
+                    running_loss = 0.0
+
+    def eval_net(self, dataloader):
+        correct = 0
+        total = 0
+        with torch.no_grad():
+            for data in dataloader:
+                inputs, labels = data
+                outputs = self.net(inputs)
+                _, predicted = torch.max(outputs.data, 1)
+                total += labels.size(0)
+                correct += (predicted == labels).sum().item()
+
+        print('Accuracy on the dataset: %d %%' % (100 * correct / total))
+
+    
