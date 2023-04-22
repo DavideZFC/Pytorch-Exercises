@@ -10,7 +10,11 @@ class Net(nn.Module):
         self.conv1 = nn.Conv2d(1, 32, 3, padding=1)
         self.conv2 = nn.Conv2d(32, 64, 3, padding=1)
         self.pool = nn.MaxPool2d(2, 2)
+
+        # 64*7*7 è l'ultimo numero (64) per la dimensione dell'input (abbiamo fatto 2 strati di pooling, quindi ci siamo ridotti a 1/4)
         self.fc1 = nn.Linear(64 * 7 * 7, 128)
+
+        # il primo numero deve essere uguale a quello prima il secondo numero non deve per forza essere 10
         self.fc2 = nn.Linear(128, 10)
 
     def forward(self, x):
