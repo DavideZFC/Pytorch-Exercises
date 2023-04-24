@@ -14,7 +14,8 @@ class Net(nn.Module):
         # 64*7*7 è l'ultimo numero (64) per la dimensione dell'input (abbiamo fatto 2 strati di pooling, quindi ci siamo ridotti a 1/4)
         self.fc1 = nn.Linear(64 * 7 * 7, 128)
 
-        # il primo numero deve essere uguale a quello prima il secondo numero non deve per forza essere 10
+        # il primo numero deve essere uguale a quello prima il secondo numero non deve per forza essere 10, può essere superiore, in quel
+        # caso tutti i neuroni in eccesso vengono scartati, l'importante è che i neuroni non siano meno di così
         self.fc2 = nn.Linear(128, 10)
 
     def forward(self, x):
