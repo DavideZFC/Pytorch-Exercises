@@ -6,13 +6,16 @@ import torch
 # number of training data
 N_data = 5000
 
+# noise to add to the data
+sigma = 0.2
+
 # generate synthetic data (training set)
 x = np.random.rand(N_data) * 2 * np.pi
-y = np.sin(x)
+y = np.sin(x) + np.random.normal(0, scale=sigma, size=N_data)
 
 # generate network and train it for given number of epochs
 net = Net()
-epochs = 10000
+epochs = 300
 net.train_net(x, y, n_epochs=epochs)
 
 # generate test set
@@ -25,6 +28,6 @@ y_pred = net(torch.Tensor(x_test).reshape(-1, 1)).detach().numpy().reshape(N_tes
 
 # show the results
 print('MSE: '+str(np.mean((y_test-y_pred)**2)))
-plt.plot(x_test, y_pred)
-plt.plot(x_test, y_test, 'o')
+plt.plot(x_test, y_pred, label='predicted curve')
+plt.plot(x_test, y_test, 'o', label='real values')
 plt.show()
