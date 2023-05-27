@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+import numpy as np
 
 class Net(nn.Module):
     def __init__(self, neurons_per_layer):
@@ -25,14 +26,25 @@ class Net(nn.Module):
             x = layer(x)
         return x
     
-    def train_net(self, x, y, n_epochs):
+    def train_net(self, x, y, n_epochs, lr=0.01, batch_size=32):
         criterion = nn.MSELoss()
-        optimizer = optim.SGD(self.parameters(), lr=0.01)
+        optimizer = optim.SGD(self.parameters(), lr=lr)
 
-        for epoch in range(n_epochs):
+        N = len(x)
+        x_tensor = torch.Tensor(x)
+        y_tensor = torch.Tensor(y)
+
+        for epoch in range(n_epochs*int(N/batch_size)):
             optimizer.zero_grad()
-            output = self(torch.Tensor(x).reshape(-1, 1))
-            target = torch.Tensor(y).reshape(-1, 1)
+
+            # sample batch
+            idx = np.random.choice(N, size=batch_size)
+
+            x_ = x_tensor[idx]
+            y_ = y_tensor[idx]
+
+            output = self(x_.reshape(-1, 1))
+            target = y_.reshape(-1, 1)
             loss = criterion(output, target)
             loss.backward()
             optimizer.step()

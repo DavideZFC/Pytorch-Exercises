@@ -16,21 +16,21 @@ x = np.random.rand(N_data) * 2 * np.pi
 y = np.sin(x)
 
 # epochs
-epochs_list = [10, 100, 1000, 10000]
+epochs = 20
+n_max = 10
 
 # network structure
-layers_list = [[1, 50, 50, 1], [1, 100, 100, 1], [1, 50, 50, 50, 1]]
+layers_list = [[1, 2*n, 2*n, 1] for n in range(1,n_max)]
 
-# store results in a matrix
-result_matrix = np.zeros((len(epochs_list), len(layers_list)))
+# store results of the training
+result = np.zeros(10)
+
 
 # perform the experiments
-for i in tqdm(range(len(epochs_list))):
-    for j in range(len(layers_list)):
-        net = Net(layers_list[j])
-        result_matrix[i,j] = exp.make_experiment(net, x_train=x, y_train=y, epochs=epochs_list[j])
+for j in tqdm(range(len(layers_list))):
+    net = Net(layers_list[j])
+    result[j] = exp.make_experiment(net, x_train=x, y_train=y, epochs=epochs)
 
-# generate network and train it for given number of epochs
-plt.imshow(result_matrix, cmap='gray')
-plt.colorbar()
+plt.plot(result)
 plt.show()
+
