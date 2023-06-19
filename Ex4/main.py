@@ -12,19 +12,31 @@ from classes.RNN import RecNN
 # Set device
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-# Hyperparameters
-input_size = 28
-hidden_size = 256
-num_layers = 2
+# if you want the 28x28 images to be trated as 784 vectors, put False
+reshape = False
+
+if reshape:
+    input_size = 28
+    hidden_size = 5
+    sequence_length = 28
+    num_epochs = 3
+else:
+    input_size = 1
+    hidden_size = 5
+    sequence_length = 784
+    num_epochs = 1
+
+
+# other Hyperparameters
+num_layers = 1
 num_classes = 10
-sequence_length = 28
 batch_size = 64
-num_epochs = 3
 
 
 
 
-X_train, y_train = get_data()
+
+X_train, y_train = get_data(reshape=reshape)
 y_train = torch.from_numpy(y_train.to_numpy()).long()
 
 

@@ -2,14 +2,18 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-def get_data():
+def get_data(reshape=True):
 
     print('We are working to export your dataset')
 
     df_train = pd.read_csv('data/train.csv')
 
     y_train = df_train['label']
-    X_train = np.array(df_train.drop('label', axis=1)).reshape(-1, 28, 28)
+    if reshape:
+        X_train = np.array(df_train.drop('label', axis=1)).reshape(-1, 28, 28)
+    else:
+        X_train = np.array(df_train.drop('label', axis=1)).reshape(-1,784,1)
+        print(X_train.shape)
 
     # normalize between -1 and 1
     X_train = (2/255)*X_train - 1

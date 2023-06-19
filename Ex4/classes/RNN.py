@@ -38,7 +38,7 @@ class RNN_GRU(nn.Module):
         # Set initial hidden and cell states
         h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device)
 
-        # Forward propagate LSTM
+        # Forward propagate
         out, _ = self.gru(x, h0)
         out = out.reshape(out.shape[0], -1)
 
@@ -76,7 +76,22 @@ class RecNN:
     def __init__(self, input_size, hidden_size, num_layers, num_classes, sequence_length):
         # Initialize network (try out just using simple RNN, or GRU, and then compare with LSTM)
         # model = RNN_LSTM(input_size, hidden_size, num_layers, num_classes).to(device)
-        self.model = RNN_LSTM(input_size, hidden_size, num_layers, num_classes, sequence_length)
+        # self.model = RNN_LSTM(input_size, hidden_size, num_layers, num_classes, sequence_length)
+        self.model = RNN(input_size, hidden_size, num_layers, num_classes, sequence_length)
+        print('Built NN with {} parameters'.format(self.count_parameters()))
+        print('Created model:')
+        print(self.model)
+
+    def count_parameters(self):
+        '''
+        hypothesis on number of parameters for LSTM num layers = 1
+        4*hidden_size*(input_size+1)
+        (seq_len*hidden_size+1)*num_classes
+        '''
+        for p in self.model.parameters():
+            if p.requires_grad:
+                print('detected layer with {} parameters'.format(p.numel()))
+        return sum(p.numel() for p in self.model.parameters() if p.requires_grad)
 
     def train(self, train_loader, num_epochs=1, learning_rate = 0.005, device='cpu'):
 
