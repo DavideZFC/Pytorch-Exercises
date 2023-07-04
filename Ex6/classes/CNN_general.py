@@ -83,7 +83,7 @@ class CNN:
         with torch.no_grad():
             for data in dataloader:
                 inputs, labels = data
-                print(inputs.shape)
+                print(labels.shape)
                 outputs = self.net(inputs)
                 _, predicted = torch.max(outputs.data, 1)
                 total += labels.size(0)
@@ -94,7 +94,26 @@ class CNN:
     def numpy_predict(self, X):
         return self.net(torch.from_numpy(X)).detach().numpy()
     
-    def adversarial_attack(self):
-        pass
+    def adversarial_attack(self, X, label, iter=1):
+        X = torch.from_numpy(X)
+        X.requires_grad = True
+
+        label = torch.tensor(label).unsqueeze(0)
+
+        dark_criterion = nn.CrossEntropyLoss()
+        optimizer = optim.SGD([X], lr=0.001, momentum=0.9)
+
+        for i in range(iter):
+            optimizer.zero_grad()
+            outputs = self.net(X)
+            loss = dark_criterion(outputs, label)
+            loss.backward()
+            self.optimizer.step()
+
+            print('[%d] loss: %.3f' % (i + 1, loss.item()))
+
+            if loss.item() < 0.5:
+                return X.detach().numpy()
+
 
     
