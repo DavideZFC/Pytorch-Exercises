@@ -6,6 +6,8 @@ def plot_figure(data, idx):
     plt.show()
 
 def simple_plot(X):
-
-    plt.imshow(X[0,0,:,:])
+    if len(X.shape) == 2:
+        plt.imshow(X)
+    else:
+        plt.imshow(X[0,0,:,:])
     plt.show()

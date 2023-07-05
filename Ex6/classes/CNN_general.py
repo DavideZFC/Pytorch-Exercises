@@ -108,12 +108,14 @@ class CNN:
             outputs = self.net(X)
             loss = dark_criterion(outputs, label)
             loss.backward()
-            self.optimizer.step()
+            optimizer.step()
 
             print('[%d] loss: %.3f' % (i + 1, loss.item()))
 
             if loss.item() < 0.5:
                 return X.detach().numpy()
+            
+        return X.detach().numpy()
 
 
     
