@@ -2,12 +2,11 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from classes.CustomDataset import CustomDataset
-from classes.CNN_general import CNN
+from classes.AE_general import Autoencoder
 from data_loader import get_data
 
 
-def train_on_data(X_train, y_train):
-    y_train = torch.from_numpy(y_train.to_numpy()).long()
+def train_autoencoder(X_train):
 
 
     # Definisci la trasformazione da applicare alle immagini
@@ -17,23 +16,24 @@ def train_on_data(X_train, y_train):
         transforms.ToTensor(),
         transforms.Normalize((0.5,), (0.5,))
     ])
+
+    transform = transforms.Compose([
+        transforms.ToTensor()
+    ])
     # alzare la media peggiora il training, ma solo all'inizio, poi la rete si adatta
 
     # Crea il dataset personalizzato
-    dataset = CustomDataset(X_train, y_train, transform=transform)
+    dataset = CustomDataset(X_train, X_train, transform=transform)
 
     # Crea il dataloader
-    dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
+    dataloader = DataLoader(dataset, batch_size=16, shuffle=True)
 
     # Inizializza la CNN e l'ottimizzatore
-    conv_layers = [32, 64]
-    fc_layers = [128, 10]
-    input_dim_x = 28
-    input_dim_y = 28
-    net = CNN(conv_layers, fc_layers, input_dim_x, input_dim_y)
+    encode_dim = 10
+    net = Autoencoder(encoded_space_dim=encode_dim)
 
     # Allenamento della CNN
-    net.train(dataloader, epochs=1)
+    net.train(dataloader, epochs=2)
 
     # Valutazione della CNN
     # net.eval_net(dataloader)
