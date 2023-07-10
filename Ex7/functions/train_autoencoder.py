@@ -6,7 +6,7 @@ from classes.AE_general import Autoencoder
 from data_loader import get_data
 
 
-def train_autoencoder(X_train):
+def train_autoencoder(X_train, epochs, short=False):
 
 
     # Definisci la trasformazione da applicare alle immagini
@@ -33,7 +33,7 @@ def train_autoencoder(X_train):
     net = Autoencoder(encoded_space_dim=encode_dim)
 
     # Allenamento della CNN
-    net.train(dataloader, epochs=2)
+    net.train(dataloader, epochs, short)
 
     # Valutazione della CNN
     # net.eval_net(dataloader)

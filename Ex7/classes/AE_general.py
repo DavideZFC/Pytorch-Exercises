@@ -84,9 +84,11 @@ class Autoencoder:
             {'params': self.encoder.parameters()},
             {'params': self.decoder.parameters()}
         ]
-        self.optimizer = optim.SGD(params_to_optimize, lr=0.001, momentum=0.9)
+        
+        # improves a lot with respect to just using SGD
+        self.optimizer = optim.Adam(params_to_optimize, lr=0.001, weight_decay=1e-05)
 
-    def train(self, dataloader, epochs=10):
+    def train(self, dataloader, epochs=10, short=False):
         # Allenamento della CNN
         for epoch in range(epochs):
             running_loss = 0.0
@@ -110,5 +112,16 @@ class Autoencoder:
                 if i % 100 == 99:
                     print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / 100))
                     running_loss = 0.0
+                
+                if short and i>99:
+                    break
+
+    def numpy_predict(self, img):
+        input = torch.tensor(img)
+
+        encode = self.encoder(input)
+        output = self.decoder(encode)
+
+        return output.detach().numpy()
 
     
