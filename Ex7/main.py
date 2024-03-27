@@ -7,7 +7,7 @@ import numpy as np
 X_train, y_train = get_data()
 
 # train the network on the dataset
-net = train_autoencoder(X_train, epochs=5, short=False)
+net = train_autoencoder(X_train, epochs=2, short=False)
 
 idx = 7
 test_sample = X_train[np.newaxis,idx:idx+1,:,:]

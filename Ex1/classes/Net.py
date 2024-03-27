@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
+from torch.utils.tensorboard import SummaryWriter
 
 class Net(nn.Module):
     '''
@@ -19,6 +20,8 @@ class Net(nn.Module):
         return x
 
     def train_net(self, x, y, n_epochs, lr=0.001, batch_size=32, show_every=1000):
+        run_name = 'lr_{}, bs_{}'.format(lr,batch_size)
+        writer = SummaryWriter(f"runs/{run_name}")
         '''
         choose the MSE criterion as training loss
         for the optimizer, use the simple stochastic gradient descent
@@ -31,6 +34,7 @@ class Net(nn.Module):
         x_tensor = torch.Tensor(x)
         y_tensor = torch.Tensor(y)
 
+        global_step = 0
         # training cycle for each epoch
         for epoch in range(n_epochs*int(N/batch_size)):
             if epoch % show_every == 1:
@@ -48,5 +52,8 @@ class Net(nn.Module):
             target = torch.Tensor(y_).reshape(-1, 1)
 
             loss = criterion(output, target)
+            writer.add_scalar("charts/episodic_return", loss.item(), global_step)
+            global_step += 1
+
             loss.backward()
             optimizer.step()
