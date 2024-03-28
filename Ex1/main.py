@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from classes.Net import Net
 import torch
+# per visualizzare training basta digitare tensorboard --logdir=runs/ nella command line
 
 # number of training data
 N_data = 5000
@@ -15,7 +16,7 @@ y = np.sin(x) + np.random.normal(0, scale=sigma, size=N_data)
 
 # generate network and train it for given number of epochs
 net = Net()
-epochs = 300
+epochs = 3000
 net.train_net(x, y, n_epochs=epochs)
 
 # generate test set
